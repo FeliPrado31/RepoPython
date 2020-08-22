@@ -1,1 +1,1 @@
-worker: python app/run.py
+web: guinicorn app:app
