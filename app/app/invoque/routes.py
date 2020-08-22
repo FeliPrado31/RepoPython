@@ -1,99 +1,95 @@
+import datetime
 import os
 import requests
-from flask import json, make_response, render_template, current_app as app, request, session, redirect, url_for, jsonify
-from . import product
-from .models import Product, ProductSchema
+from flask import json, flash, make_response, render_template, current_app as app, request, session, redirect, url_for, jsonify
+from . import invoque
+from .models import Invoque, InvoqueSchema
 
 
-@app.route('/product')
-def getView(product=None):
-    r = requests.get('http://localhost:8080/product/all')
-    return render_template('/product/index.html', products=r.json())
-
-@app.route('/product/new')
-def product_new():
-    return render_template('product/new.html')
+@app.route('/invoque')
+def get_invoque():
+    r = requests.get('http://localhost:8080/invoque/all')
+    return render_template('/invoque/index.html', invoque=r.json())
 
 
-@app.route('/product/all', methods=['GET'])
-def product():
-    products = Product.query.filter(Product.state == True)
-    product_schema = ProductSchema(many=True)
-    return product_schema.jsonify(products)
+@app.route('/invoque/new')
+def invoque_new():
+    return render_template('/invoque/new.html')
 
 
-@app.route('/product/create', methods=['POST'])
-def product_register():
+@app.route('/invoque/all', methods=['GET'])
+def invoque_all():
+    invoque = Invoque.query.all()
+    invoque_schema = InvoqueSchema(many=True)
+    return invoque_schema.jsonify(invoque)
+
+
+@app.route('/invoque/create', methods=['POST'])
+def invoque_register():
     if request.method == 'POST':
         try:
-            name = request.form['name']
-            category = request.form['category']
-            price = request.form['price']
-            count = request.form['count']
-            product = Product(name, category, price, count)
-            product.save()
+            products = request.form['products']
+            total = request.form['price']
+            billing_method = request.form['billing_method']
+            client_id = request.form['client_id']
 
-            return redirect(url_for('getView'))
+            r = requests.get(f'http://localhost:8080/product/{products}')
+            if r.status_code == 404:
+                flash("Sorry. This Product don't exist.")
+                return redirect(url_for('invoque_new'))
+
+            findInvoque = Invoque.query.filter_by(client_id=client_id).first()
+            if findInvoque == None:
+                flash("Sorry. This client don't exist.")
+                return redirect(url_for('invoque_new'))
+
+            if findInvoque != None:
+                findInvoque.total = int(findInvoque.total) + int(total)
+                findInvoque.products = findInvoque.products + ', ' + products
+                findInvoque.billing_method = billing_method
+                findInvoque.num_products = findInvoque.num_products + 1
+                findInvoque.save()
+                invoque_schema = InvoqueSchema()
+                return redirect(url_for('invoque_new'))
+            invoque = Invoque(products, total, billing_method,
+                              client_id, 1, datetime.datetime.utcnow())
+            invoque.save()
+            invoque_schema = InvoqueSchema()
+            return redirect(url_for('invoque_new'))
+
         except Exception as e:
             return jsonify({"error": e})
 
 
-@app.route('/product/state/<int:id>', methods=['PUT'])
-def product_change_state(id=None):
-    if request.method == 'PUT':
-        try:
-            data = Product.get_by_id(id)
-            if data != None:
-                data.state = False
-                Product.update()
-                product_schema = ProductSchema()
-                return product_schema.jsonify(data)
-            else:
-                return make_response(jsonify({'error': 'Not found'}), 404)
-        except Exception as e:
-           return jsonify({"error": e})
-
-@app.route('/product/delete/<int:id>', methods=['DELETE'])
-def product_delete_by_id(id=None):
-    if request.method == 'DELETE':
-        try:
-            Product.query.filter(Product.id == id).delete()
-            Product.update()
-            return redirect(url_for('getView'))
-        except Exception as e:
-            return jsonify({"error": e})
-
-@app.route('/product/update', methods=['POST'])
-def product_update():
-    if request.method == 'POST':
-        try:
-            data = Product.get_by_id(request.form['id'])
-            if data != None:
-                data.name = request.form['name']
-                data.category = request.form['category']
-                data.price = request.form['price']
-                data.count = request.form['count']
-                Product.update()
-                product_schema = ProductSchema()
-                return redirect(url_for('getView'))
-            else:
-                return make_response(jsonify({'error': 'Not found'}), 404)
-        except Exception as e:
-            return jsonify({"error": e})
-
-
-@app.route('/product/edit', methods=['GET'])
-def product_edit_view():
-    return render_template('product/edit.html')
-
-@app.route('/product/<int:id>', methods=['GET'])
-def product_get(id=None):
+@app.route('/invoque/<int:id>', methods=['GET'])
+def invoque_by_id(id=None):
     if request.method == 'GET':
         try:
-            data = Product.get_by_id(id)
+            data = Invoque.get_by_id(id)
             if data != None:
-                product_schema = ProductSchema()
-                return product_schema.jsonify(data)
+                invoque_schema = InvoqueSchema()
+                return invoque_schema.jsonify(data)
+            else:
+                return make_response(jsonify({'error': 'Not found'}), 404)
+        except Exception as e:
+            return redirect(url_for('get_invoque'))
+
+
+@app.route('/invoque/edit/<int:id>', methods=['GET'])
+def invoque_edit_view(id=None):
+    r = requests.get(f'http://localhost:8080/invoque/{id}')
+    return render_template('invoque/edit.html', invoque=r.json())
+
+
+@app.route('/invoque/update', methods=['POST'])
+def invoque_update():
+    if request.method == 'POST':
+        try:
+            data = Invoque.get_by_id(request.form['id'])
+            if data != None:
+                data.billing_method = request.form['billing_method']
+                Invoque.update()
+                return redirect(url_for('get_invoque'))
             else:
                 return make_response(jsonify({'error': 'Not found'}), 404)
         except Exception as e:

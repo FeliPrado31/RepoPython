@@ -39,8 +39,13 @@ db.session.commit()
 def not_found(error):
     return render_template('404.html'), 404
 
+
+#importing the blueprints
 from .product import product
 app.register_blueprint(product)
 
 from .client import client
 app.register_blueprint(client)
+
+from .invoque import invoque
+app.register_blueprint(invoque)

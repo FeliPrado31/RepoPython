@@ -1,0 +1,55 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+<h1 class="center">Update Product</h1>
+<div class="container">
+
+  <!-- Form -->
+  <div class="row">
+    <form class="col s12" action="{{url_for('invoque_register')}}" method="POST">
+      <div class="row">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class=flashes>
+          {% for message in messages %}
+          <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <div class="input-field col s6">
+          <i class="material-icons prefix">assignment</i>
+          <textarea id="client_id" name="client_id" class="materialize-textarea"></textarea>
+          <label for="client_id">Client</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">archive</i>
+          <input id="products" name="products" type="text" class="validate" />
+          <label for="products">Producs</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
+          <input id="price" name="price" type="text" class="validate" />
+          <label for="price">Price</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">assignment</i>
+          <textarea id="billing_method" name="billing_method" class="materialize-textarea"></textarea>
+          <label for="billing_method">Billing method</label>
+        </div>
+      </div>
+      <div class="row">
+        <button onclick="deleteHistory()" class="btn waves-effect waves-light" type="submit">Send
+          <i class="material-icons right">border_color</i>
+        </button>
+      </div>
+  </div>
+  </form>
+</div>
+
+
+{% endblock %}

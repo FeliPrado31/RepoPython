@@ -22,6 +22,14 @@ def product():
     return product_schema.jsonify(products)
 
 
+@app.route('/product/<string:name>', methods=['GET'])
+def product_by_name(name=None):
+    products = Product.get_by_name(name)
+    if products is None:
+        return "Not found", 404
+    product_schema = ProductSchema()
+    return product_schema.jsonify(products)
+
 @app.route('/product/create', methods=['POST'])
 def product_register():
     if request.method == 'POST':
