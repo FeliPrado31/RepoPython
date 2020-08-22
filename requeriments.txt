@@ -1,4 +1,10 @@
 flask
-flask-wtf
+Flask-WTF
 SQLAlchemy
-MySQL-python
+Flask-SQLAlchemy
+mysqlclient
+Marshmallow
+flask-marshmallow
+marshmallow-sqlalchemy
+Flask-Uploads
+flask-cors

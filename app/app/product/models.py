@@ -1,7 +1,7 @@
-from app import db
+from app import db, ma
 
 
-class User(db.Model):
+class Product(db.Model):
 
     __tablename__ = 'product'
 
@@ -12,18 +12,37 @@ class User(db.Model):
     count = db.Column(db.Integer, nullable=False)
     state = db.Column(db.Boolean, default=True)
 
+    def __init__(self, name, category, price, count, state):
+        self.name = name
+        self.category = category
+        self.price = price
+        self.count = count
+        self.state = state
+
     def __repr__(self):
         return f'<Product {self.name}>'
 
     def save(self):
-        if not self.id:
-            db.session.add(self)
+        # if not self.id:
+        db.session.add(self)
+        db.session.commit()
+
+    def update():
         db.session.commit()
 
     @staticmethod
+    def get_all():
+        return Product.query.all()
+
+    @staticmethod
     def get_by_id(id):
-        return User.query.get(id)
+        return Product.query.get(id)
 
     @staticmethod
     def get_by_name(name):
-        return User.query.filter_by(name=name).first()
+        return Product.query.filter_by(name=name).first()
+
+
+class ProductSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'name', 'category', 'price', 'count', 'state')

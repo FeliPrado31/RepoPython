@@ -29,3 +29,6 @@ CSRF_SESSION_KEY = "secret"
 
 # Secret key for signing cookies
 SECRET_KEY = "secret"
+UPLOADED_IMAGES_DEST = 'uploads/images'
+
+UPLOAD_FOLDER = "public/img"
