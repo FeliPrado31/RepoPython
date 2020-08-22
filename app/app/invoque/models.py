@@ -46,6 +46,8 @@ class Invoque(db.Model):
         return Invoque.query.filter_by(name=name).first()
 
 
+
+
 class InvoqueSchema(ma.Schema):
     class Meta:
         fields = ('id', 'name', 'products',

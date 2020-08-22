@@ -10,6 +10,11 @@ def client():
     r = requests.get('http://localhost:8080/client/all')
     return render_template('client/index.html', clients=r.json())
 
+@app.route('/client/top')
+def client_most():
+    r = requests.get('http://localhost:8080/client/most')
+    return render_template('client/mostClient.html', clients=r.json())
+
 
 @app.route('/client/new')
 def client_new():
@@ -25,13 +30,13 @@ def client_register():
             telephone = request.form['tel']
             photo = request.form['link']
             addres = request.form['address']
-            client = Client(name, cc, telephone, photo, addres)
+            client = Client(name, cc, telephone, photo, addres, 1)
             client.save()
 
             client_schema = ClientSchema()
             return redirect(url_for('client'))
         except Exception as e:
-            return jsonify({"error": e})
+            return redirect(url_for('client_register'))
 
 
 @app.route('/client/edit', methods=['GET'])
@@ -49,9 +54,10 @@ def client_delete_by_id(id=None):
         except Exception as e:
             return jsonify({"error": e})
 
-@app.route('/client/update', methods=['PUT'])
+
+@app.route('/client/update', methods=['POST'])
 def client_edit():
-    if request.method == 'PUT':
+    if request.method == 'POST':
         try:
             data = Client.get_by_id(request.form['id'])
             if data != None:
@@ -63,6 +69,22 @@ def client_edit():
                 Client.update()
                 client_schema = ClientSchema()
                 return redirect(url_for('client'))
+            else:
+                return make_response(jsonify({'error': 'Not found'}), 404)
+        except Exception as e:
+            return jsonify({"error": e})
+
+
+@ app.route('/client/buy/<int:id>', methods=['GET'])
+def client_new_buy(id=None):
+    if request.method == 'GET':
+        try:
+            data = Client.get_by_id(id)
+            if data != None:
+                data.count = data.count + 1
+                data.save()
+                client_schema = ClientSchema()
+                return client_schema.jsonify(data)
             else:
                 return make_response(jsonify({'error': 'Not found'}), 404)
         except Exception as e:
@@ -82,6 +104,13 @@ def client_get(id=None):
         except Exception as e:
             return jsonify({"error": e})
 
+
+
+@app.route('/client/most', methods=['GET'])
+def invoque_by_most():
+    data = Client.get_most_buyer()
+    invoque_schema = ClientSchema(many=True)
+    return invoque_schema.jsonify(data)
 
 @ app.route('/client/all', methods=['GET'])
 def client_all():

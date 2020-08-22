@@ -1,9 +1,12 @@
 {% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
-<h1 class="center">Update Product</h1>
+<div class="center">
+  <h1>New Invoice</h1>
+  <p>in order to create an invoice, you need a valid customer and a valid product!</p>
+</div>
 <div class="container">
 
   <!-- Form -->
-  <div class="row">
+  <div class="row center">
     <form class="col s12" action="{{url_for('invoque_register')}}" method="POST">
       <div class="row">
         {% with messages = get_flashed_messages() %}

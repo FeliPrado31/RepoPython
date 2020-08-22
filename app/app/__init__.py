@@ -34,6 +34,11 @@ db.session.commit()
 
 #configure images
 
+#Chargue the home
+@app.route('/')
+def home():
+    return render_template('home.html')
+
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):

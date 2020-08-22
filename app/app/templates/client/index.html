@@ -3,7 +3,7 @@
   <h1>Clients</h1>
   <div class="row">
     {%for i in clients%} {% set my_string = 'editClient('~i.id~')'%} {% set
-    sendDelete = 'sendDelete('~i.id~')'%}
+    sendDelete = 'sendDelete('~i.id~')'%} {% set changeStatus = 'editClient('~i.id~')'%}
     <div class="col s6 m6">
       <div class="card">
         <div class="card-image">

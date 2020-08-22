@@ -1,5 +1,6 @@
 import datetime
 import os
+import collections
 import requests
 from flask import json, flash, make_response, render_template, current_app as app, request, session, redirect, url_for, jsonify
 from . import invoque
@@ -38,19 +39,25 @@ def invoque_register():
                 flash("Sorry. This Product don't exist.")
                 return redirect(url_for('invoque_new'))
 
-            findInvoque = Invoque.query.filter_by(client_id=client_id).first()
-            if findInvoque == None:
+            c = requests.get(f'http://localhost:8080/client/{client_id}')
+            if r.status_code == 404:
                 flash("Sorry. This client don't exist.")
                 return redirect(url_for('invoque_new'))
 
-            if findInvoque != None:
-                findInvoque.total = int(findInvoque.total) + int(total)
-                findInvoque.products = findInvoque.products + ', ' + products
-                findInvoque.billing_method = billing_method
-                findInvoque.num_products = findInvoque.num_products + 1
-                findInvoque.save()
-                invoque_schema = InvoqueSchema()
-                return redirect(url_for('invoque_new'))
+
+            buy = requests.get(f'http://localhost:8080/client/buy/{client_id}')
+            # this part is only with the system of multiple buys
+            
+            # findInvoque = Invoque.query.filter_by(client_id=client_id).first()
+
+            # if findInvoque != None:
+            #     findInvoque.total = int(findInvoque.total) + int(total)
+            #     findInvoque.products = findInvoque.products + ', ' + products
+            #     findInvoque.billing_method = billing_method
+            #     findInvoque.num_products = findInvoque.num_products + 1
+            #     findInvoque.save()
+            #     invoque_schema = InvoqueSchema()
+            #     return redirect(url_for('invoque_new'))
             invoque = Invoque(products, total, billing_method,
                               client_id, 1, datetime.datetime.utcnow())
             invoque.save()
@@ -59,6 +66,7 @@ def invoque_register():
 
         except Exception as e:
             return jsonify({"error": e})
+
 
 
 @app.route('/invoque/<int:id>', methods=['GET'])
