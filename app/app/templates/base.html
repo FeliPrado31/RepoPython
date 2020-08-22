@@ -24,12 +24,77 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 
     <script>
+      const deleteHistory = () => {
+        localStorage.clear();
+      };
+
+      const edit = JSON.parse(localStorage.getItem("edit"));
+      const product = JSON.parse(localStorage.getItem("product"));
+      if (edit) {
+        document.getElementById("name").value = edit.name;
+        document.getElementById("cc").value = edit.cc;
+        document.getElementById("address").value = edit.address;
+        document.getElementById("icon_telephone").value = edit.telephone;
+        document.getElementById("icon_link").value = edit.photo;
+        document.getElementById("id").value = edit.id;
+      }
+
+      if (product) {
+        document.getElementById("id").value = product.id;
+        document.getElementById("name").value = product.name;
+        document.getElementById("count").value = product.count;
+        document.getElementById("category").value = product.category;
+        document.getElementById("price").value = product.price;
+      }
+
+      async function sendDelete(id) {
+        const res = await fetch(`http://localhost:8080/client/delete/${id}`, {
+          method: "DELETE",
+        });
+        return changePage("client");
+      }
+      async function sendProductDelete(id) {
+        const res = await fetch(`http://localhost:8080/product/delete/${id}`, {
+          method: "DELETE",
+        });
+        return changePage("product");
+      }
+
+      async function changePage(page) {
+        const res = await fetch(`http://localhost:8080/${page}/all`, {
+          method: "GET",
+        });
+        if (res.status == 200) return location.reload();
+      }
+
       async function changeState(id) {
-        const res = await fetch(`http://localhost:8080/product/edit/${id}`, {
+        const res = await fetch(`http://localhost:8080/product/state/${id}`, {
           method: "PUT",
           body: JSON.stringify({ status: false }),
         });
-        if (res.status == 200) console.log(res)
+        return changePage("product");
+      }
+
+      async function editClient(id) {
+        const res = await fetch(`http://localhost:8080/client/${id}`, {
+          method: "GET",
+        });
+        data = await res.json();
+        if (res.status == 200) {
+          window.localStorage.setItem("edit", JSON.stringify(data));
+          return window.location.replace("/client/edit");
+        }
+      }
+
+      async function sendProducEdit(id) {
+        const res = await fetch(`http://localhost:8080/product/${id}`, {
+          method: "GET",
+        });
+        data = await res.json();
+        if (res.status == 200) {
+          window.localStorage.setItem("product", JSON.stringify(data));
+          return window.location.replace("/product/edit");
+        }
       }
     </script>
   </body>

@@ -1,17 +1,20 @@
+import datetime
 from app import db, ma
 
 
-class Product(db.Model):
+class Invoque(db.Model):
 
-    __tablename__ = 'product'
+    __tablename__ = 'invoque'
 
     id = db.Column(db.Integer, primary_key=True)
-    category = db.Column(db.String(80), nullable=False)
-    name = db.Column(db.String(256), unique=True, nullable=False)
+    products = db.Column(db.String(255), nullable=False)
     price = db.Column(db.Integer, nullable=False)
-    count = db.Column(db.Integer, nullable=False)
-    state = db.Column(db.Boolean, default=True)
+    total = db.Column(db.Integer, nullable=False)
+    billing_method = db.Column(db.String(255))
+    billing_method = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    client_id = db.Column(db.Integer, db.ForeignKey('client.id'))
 
+    #TODO: fix init
     def __init__(self, name, category, price, count):
         self.name = name
         self.category = category
@@ -19,7 +22,7 @@ class Product(db.Model):
         self.count = count
 
     def __repr__(self):
-        return f'<Product {self.name}>'
+        return f'<Invoque {self.name}>'
 
     def save(self):
         # if not self.id:
@@ -31,18 +34,18 @@ class Product(db.Model):
 
     @staticmethod
     def get_all():
-        return Product.query.filter(Product.state == True)
+        return Invoque.query.filter(Invoque.state == True)
 
     @staticmethod
     def get_by_id(id):
-        return Product.query.get(id)
+        return Invoque.query.get(id)
 
     @staticmethod
     def get_by_name(name):
-        return Product.query.filter_by(name=name).first()
+        return Invoque.query.filter_by(name=name).first()
 
 
-class ProductSchema(ma.Schema):
+class InvoqueSchema(ma.Schema):
     class Meta:
         fields = ('id', 'name', 'category', 'price', 'count', 'state')
 

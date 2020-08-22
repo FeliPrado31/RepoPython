@@ -1,0 +1,60 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+<h1 class="center">Update Client</h1>
+<div class="container">
+
+  <!-- Form -->
+  <div class="row">
+    <form class="col s12" action="/client/update" method="POST">
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
+          <input id="id" name="id" type="text" class="validate"/>
+          <label for="name">Id</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
+          <input id="name" name="name" type="text" class="validate"/>
+          <label for="name">Name</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">assignment_ind</i>
+          <input id="cc" name="cc" type="text" class="validate" />
+          <label for="cc">Cedula</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+        <i class="material-icons prefix">assignment</i>
+          <textarea id="address" name="address" class="materialize-textarea"></textarea>
+          <label for="address">Address</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+        <i class="material-icons prefix">phone</i>
+        <input id="icon_telephone" name="tel" type="tel" class="validate" />
+        <label for="icon_telephone">Telephone</label>
+      </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">image</i>
+          <input id="icon_link" name="link" type="tel" class="validate" />
+          <label for="icon_link">Image URL</label>
+        </div>
+      </div>
+  </div>
+  <div class="row">
+    <button onclick="deleteHistory()" class="btn waves-effect waves-light" type="submit">Update
+        <i class="material-icons right">cloud</i>
+    </button>
+</div>
+</form>
+</div>
+
+
+{% endblock %}

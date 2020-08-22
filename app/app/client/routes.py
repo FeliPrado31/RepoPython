@@ -1,77 +1,79 @@
 import os
-from flask import flash, json, make_response, render_template, current_app as app, request, session, redirect, url_for, jsonify
+import requests
+from flask import json, make_response, render_template, current_app as app, request, session, redirect, url_for, jsonify
 from . import client
 from .models import Client, ClientSchema
-from .form import ClientUpload
-# import uploads for pothos
-from flask_uploads import configure_uploads, IMAGES, UploadSet
-from werkzeug.utils import secure_filename
-
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+@app.route('/client')
+def client():
+    r = requests.get('http://localhost:8080/client/all')
+    return render_template('client/index.html', clients=r.json())
 
-@app.route('/client', methods=['GET', 'POST'])
-def client_home():
+
+@app.route('/client/new')
+def client_new():
+    return render_template('client/new.html')
+
+
+@app.route('/client/create', methods=['POST'])
+def client_register():
     if request.method == 'POST':
-        # check if the post request has the file part
-        if 'file' not in request.files:
-            flash('No file part')
-            return redirect(request.url)
-        file = request.files['file']
-        # if user does not select file, browser also
-        # submit an empty part without filename
-        if file.filename == '':
-            flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('uploaded_file',
-                                    filename=filename))
-    return render_template('client/index.html')
-    # try:
-    #     form = ClientUpload()
+        try:
+            name = request.form['name']
+            cc = request.form['cc']
+            telephone = request.form['tel']
+            photo = request.form['link']
+            addres = request.form['address']
+            client = Client(name, cc, telephone, photo, addres)
+            client.save()
 
-    #     if form.validate_on_submit():
-    #         print(form)
-    #         # client = Client(request.form.get('name'), request.form.get(
-    #         #     'cc'), request.form.get('tel'), form.image.data, request.form.get('address'))
-    #         # client.save()
-    #         return 'Work', 201
-    #     return 'Error', 404
-    # except Exception as e:
-    #     return jsonify({"error": e})
+            client_schema = ClientSchema()
+            return redirect(url_for('client'))
+        except Exception as e:
+            return jsonify({"error": e})
 
 
-@app.route('/client/edit/<int:id>', methods=['PUT'])
-def client_edit(id=None):
+@app.route('/client/edit', methods=['GET'])
+def client_edit_view():
+    return render_template('client/edit.html')
+
+
+@app.route('/client/delete/<int:id>', methods=['DELETE'])
+def client_delete_by_id(id=None):
+    if request.method == 'DELETE':
+        try:
+            Client.query.filter(Client.id == id).delete()
+            Client.update()
+            return redirect(url_for('client'))
+        except Exception as e:
+            return jsonify({"error": e})
+
+@app.route('/client/update', methods=['PUT'])
+def client_edit():
     if request.method == 'PUT':
         try:
-            data = client.get_by_id(id)
+            data = Client.get_by_id(request.form['id'])
             if data != None:
-                data.name = request.json['name']
-                data.category = request.json['category']
-                data.price = request.json['price']
-                data.count = request.json['count']
-                data.state = request.json['state']
-                client.update()
+                data.name = request.form['name']
+                data.cc = request.form['cc']
+                data.photo = request.form['link']
+                data.telephone = request.form['tel']
+                data.address = request.form['address']
+                Client.update()
                 client_schema = ClientSchema()
-                return client_schema.jsonify(data)
+                return redirect(url_for('client'))
             else:
                 return make_response(jsonify({'error': 'Not found'}), 404)
         except Exception as e:
             return jsonify({"error": e})
 
 
-@app.route('/client/<int:id>', methods=['GET'])
+@ app.route('/client/<int:id>', methods=['GET'])
 def client_get(id=None):
     if request.method == 'GET':
         try:
-            data = client.get_by_id(id)
+            data = Client.get_by_id(id)
             if data != None:
                 client_schema = ClientSchema()
                 return client_schema.jsonify(data)
@@ -79,3 +81,10 @@ def client_get(id=None):
                 return make_response(jsonify({'error': 'Not found'}), 404)
         except Exception as e:
             return jsonify({"error": e})
+
+
+@ app.route('/client/all', methods=['GET'])
+def client_all():
+    client = Client.query.all()
+    client_schema = ClientSchema(many=True)
+    return client_schema.jsonify(client)

@@ -1,0 +1,53 @@
+{% extends "base.html" %} {% block title %}Home{% endblock %} {% block content%}
+<h1 class="center">Update Product</h1>
+<div class="container">
+
+  <!-- Form -->
+  <div class="row">
+    <form class="col s12" action="/product/update" method="POST">
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">archive</i>
+          <input id="id" name="id" type="text" class="validate"/>
+          <label for="name">Id</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">account_circle</i>
+          <input id="name" name="name" type="text" class="validate"/>
+          <label for="name">Name</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <i class="material-icons prefix">shopping_cart</i>
+          <input id="count" name="count" type="text" class="validate" />
+          <label for="count">Count</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+        <i class="material-icons prefix">assignment</i>
+          <textarea id="category" name="category" class="materialize-textarea"></textarea>
+          <label for="category">Category</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+        <i class="material-icons prefix">info</i>
+        <input id="price" name="price" type="text" class="validate" />
+        <label for="price">Price</label>
+      </div>
+      </div>
+  </div>
+  <div class="row">
+    <button onclick="deleteHistory()" class="btn waves-effect waves-light" type="submit">Update
+        <i class="material-icons right">border_color</i>
+    </button>
+</div>
+</form>
+</div>
+
+
+{% endblock %}

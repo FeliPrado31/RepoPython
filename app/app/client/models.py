@@ -11,6 +11,7 @@ class Client(db.Model):
     address = db.Column(db.String(256), unique=True, nullable=False)
     telephone = db.Column(db.String(10), nullable=False)
     photo = db.Column(db.Text, nullable=False)
+    invoque = db.relationship('Invoque', backref='client')
 
     def __init__(self, name, cc, telephone, photo, address):
         self.name = name
@@ -41,4 +42,8 @@ class Client(db.Model):
 
 class ClientSchema(ma.Schema):
     class Meta:
-        fields = ('id', 'name', 'cc', 'telephone', 'address')
+        fields = ('id', 'name', 'cc', 'telephone', 'address', 'photo')
+
+
+db.create_all()
+db.session.commit()

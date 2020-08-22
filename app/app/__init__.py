@@ -29,7 +29,6 @@ db = SQLAlchemy(app)
 
 # Initialize Marshmallow
 ma = Marshmallow(app)
-
 db.create_all()
 db.session.commit()
 
